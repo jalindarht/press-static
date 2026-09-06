@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# Update the host below after the site is live.
+# Sitemap: https://USERNAME.github.io/REPO/sitemap.xml
