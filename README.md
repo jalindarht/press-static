@@ -146,17 +146,46 @@ stale listeners behind.
   the printer body survive; the alpha edge was then feathered to hide the JPEG stair-step.
   If a vector original (AI/EPS/SVG/PDF) ever turns up, replace these — it will be sharper
   and much smaller.
-- Machine and product photographs are the images embedded in the profile PDF, trimmed and
-  re-encoded. Several are stock or supplier product shots used in the original brochure
-  rather than photographs of this workshop — the self-ink stamp shot is visibly
-  Trodat-branded and the pre-ink one carries an `expressprint.com.sg` watermark. The four
-  supply collages are generic web images of the same kind. All of these are worth replacing
-  with real photographs of actual stock when they are available.
+- Machine photographs are the images embedded in the profile PDF, trimmed and re-encoded.
+  Some remain supplier product shots used in the original brochure rather than photographs
+  of this workshop — the self-ink stamp shot is still visibly Trodat-branded, for instance.
+  Worth replacing with real photographs when they are available.
+- The pre-ink stamp photo arrived carrying an `expressprint.com.sg` watermark along the
+  bottom. Publishing another company's watermark on a commercial site is not acceptable, so
+  the strip is cropped off (the photo is otherwise the right product).
+
+### Stock photography
+
+Three of the four supply photographs are from **Pexels**, whose licence permits commercial
+use with no attribution required. Sources, so they can be re-fetched or replaced:
+
+| File | Pexels photo |
+| --- | --- |
+| `supplies/safety-material.jpg` | [8488037](https://www.pexels.com/photo/8488037/) — hard hat and work gloves |
+| `supplies/housekeeping-material.jpg` | [5217889](https://www.pexels.com/photo/5217889/) — row of cleaning products |
+| `supplies/office-stationery.jpg` | [8251060](https://www.pexels.com/photo/8251060/) — desk stationery |
+
+Each is centre-cropped to 16:9 and re-encoded at 1200px wide.
+
+**`supplies/packaging-material.jpg` is deliberately not stock.** Pexels has no usable
+photograph of industrial packaging consumables — searches for packing tape, bubble wrap and
+stretch film return domestic house-moving shots and warehouses full of cardboard boxes,
+and cardboard boxes are not on the product list at all. The supplied collage names the
+actual four product families (air bubble roll, stretch roll, packing strip, BOPP tape), so
+it is more accurate than any substitute. It is composited onto a 16:9 plate so it matches
+the other three cards' proportions.
+
+Because these are photographs rather than white-background product shots, `.supply-media`
+fills its frame with `object-fit: cover`, unlike `.unit-media` which contains its image.
 - The four-colour press photo is 542px wide after trimming, which is the limit of the
   supplied file. It is sharp enough for the card and gallery tiles but would soften if used
   much larger.
 - Client logos are reproduced from the profile's customer page. All marks belong to their
-  respective owners.
+  respective owners. They render desaturated and return to full colour on hover, which stops
+  fifteen competing brand palettes fighting the rest of the page.
+- The card heading icons (`.unit-icon`, `.supply-icon`) are inline SVG authored in this
+  repository — no third-party artwork, a few hundred bytes each, and they take the brand
+  cyan from CSS rather than being baked in.
 
 ## Card image sizing
 

@@ -319,20 +319,17 @@ ul { margin: 0; padding: 0; list-style: none; }
   overflow: hidden;
 }
 .supply-media {
-  /* see .unit-media: fixed height, image bounded in matching units */
-  --media-h: clamp(210px, 23vw, 300px);
-  --media-pad: 1rem;
-  height: var(--media-h);
-  background: #fff;
-  display: grid; place-items: center;
-  padding: var(--media-pad);
+  /* These are photographs at a known 16:9, unlike the mixed product shots in
+     .unit-media, so they fill the frame instead of sitting inside padding. */
+  height: clamp(200px, 22vw, 290px);
+  background: var(--paper-3);
+  overflow: hidden;
   border-bottom: 1px solid var(--line);
 }
 .supply-media img {
-  max-height: calc(var(--media-h) - var(--media-pad) * 2);
-  max-width: 100%;
-  width: auto;
-  object-fit: contain;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: center;
 }
 
 .supply-body { padding: 1.4rem 1.5rem 1.6rem; }
@@ -698,13 +695,24 @@ ul { margin: 0; padding: 0; list-style: none; }
 .supply { transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease; }
 .supply:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: #cfd8de; }
 
-/* ---------- supply icon in the heading ---------- */
-.supply-body h3 { display: flex; align-items: center; gap: .6rem; }
-.supply-icon {
-  flex: none; width: 26px; height: 26px;
-  fill: none; stroke: var(--cyan); stroke-width: 1.6;
+/* ---------- line icons in card headings ----------
+   Authored in the markup rather than fetched: a few hundred bytes each, no
+   third-party artwork, and they take the brand cyan from CSS. */
+.supply-body h3, .unit-body h3 { display: flex; align-items: center; gap: .6rem; }
+.supply-icon, .unit-icon {
+  flex: none;
+  fill: none; stroke: var(--cyan);
   stroke-linecap: round; stroke-linejoin: round;
+  transition: stroke .2s ease, transform .3s cubic-bezier(.22, .61, .36, 1);
 }
+.supply-icon { width: 26px; height: 26px; stroke-width: 1.6; }
+.unit-icon { width: 22px; height: 22px; stroke-width: 1.7; }
+
+.unit:hover .unit-icon, .supply:hover .supply-icon {
+  stroke: var(--magenta);
+  transform: scale(1.12);
+}
+.unit-feature .unit-icon { stroke: var(--magenta); }
 
 /* ---------- list + tag hovers ---------- */
 .item-list li { transition: color .2s ease; }
@@ -848,6 +856,8 @@ ul { margin: 0; padding: 0; list-style: none; }
   .unit::after, .supply::after { transition: none; }
   .supply:hover, .chip:hover, .tags li:hover,
   .client-grid li:hover img, .btn:active { transform: none; }
+  .supply-icon, .unit-icon { transition: stroke .2s ease; }
+  .unit:hover .unit-icon, .supply:hover .supply-icon { transform: none; }
   .to-top { opacity: 1; transform: none; transition: none; }
   .lightbox.is-open .lb-figure img { animation: none; }
 }
