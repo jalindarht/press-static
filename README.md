@@ -204,8 +204,8 @@ fills its frame with `object-fit: cover`, unlike `.unit-media` which contains it
   supplied file. It is sharp enough for the card and gallery tiles but would soften if used
   much larger.
 - Client logos are reproduced from the profile's customer page. All marks belong to their
-  respective owners. They render desaturated and return to full colour on hover, which stops
-  fifteen competing brand palettes fighting the rest of the page.
+  respective owners. They render in **full colour** — an earlier revision desaturated them
+  until hover and that was rejected, so do not reintroduce a `filter` on `.client-grid img`.
 - The card heading icons (`.unit-icon`, `.supply-icon`) are inline SVG authored in this
   repository — no third-party artwork, a few hundred bytes each, and they take the brand
   cyan from CSS rather than being baked in.

@@ -753,13 +753,6 @@ ul { margin: 0; padding: 0; list-style: none; }
 .gallery figure.is-hidden { display: none; }
 .gallery figure.is-entering { opacity: 0; transform: scale(.94); }
 
-/* ---------- client logos: mono until hover ---------- */
-.client-grid img {
-  filter: grayscale(1) contrast(.92) opacity(.62);
-  transition: filter .3s ease, transform .3s ease;
-}
-.client-grid li:hover img { filter: none; transform: scale(1.05); }
-
 /* ---------- copy buttons ---------- */
 .ci-value { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; }
 .copy-btn {
@@ -854,8 +847,7 @@ ul { margin: 0; padding: 0; list-style: none; }
   .supply:hover .supply-media img,
   .gallery figure:hover img { transform: none; }
   .unit::after, .supply::after { transition: none; }
-  .supply:hover, .chip:hover, .tags li:hover,
-  .client-grid li:hover img, .btn:active { transform: none; }
+  .supply:hover, .chip:hover, .tags li:hover, .btn:active { transform: none; }
   .supply-icon, .unit-icon { transition: stroke .2s ease; }
   .unit:hover .unit-icon, .supply:hover .supply-icon { transform: none; }
   .to-top { opacity: 1; transform: none; transition: none; }
