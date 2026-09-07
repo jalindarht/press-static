@@ -602,3 +602,252 @@ ul { margin: 0; padding: 0; list-style: none; }
   body { font-size: 11pt; color: #000; }
   .section { padding: 1rem 0; break-inside: avoid; }
 }
+
+/* ==========================================================================
+   Interaction layer
+   Everything below is enhancement only: the page is complete and usable with
+   JavaScript off, and every block that moves is switched off under
+   prefers-reduced-motion at the end of this file.
+   ========================================================================== */
+
+/* anchor targets must not land under the sticky header */
+#capabilities, #products, #supplies, #gallery, #clients, #about, #contact {
+  scroll-margin-top: 84px;
+}
+
+/* ---------- scroll progress ---------- */
+.scroll-progress {
+  position: absolute; left: 0; right: 0; bottom: -1px;
+  height: 3px; overflow: hidden;
+}
+.scroll-progress i {
+  display: block; height: 100%;
+  background: linear-gradient(90deg, var(--cyan) 0%, var(--magenta) 55%, var(--yellow) 100%);
+  transform: scaleX(0); transform-origin: left center;
+}
+
+/* ---------- scroll reveal ----------
+   Gated on html.js, which an inline script in <head> sets before first paint.
+   Two consequences that matter:
+     - with JavaScript off or broken, nothing is ever hidden;
+     - the hidden state is in the blocking stylesheet rather than applied by a
+       deferred script, so there is no flash of visible-then-hidden content.
+   The reveal targets are listed by selector for the same reason. */
+.js .reveal-target:not(.is-in) {
+  opacity: 0;
+  transform: translateY(18px);
+}
+.js .reveal-target {
+  transition: opacity .6s cubic-bezier(.22, .61, .36, 1),
+              transform .6s cubic-bezier(.22, .61, .36, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+/* ---------- header shadow once scrolled ---------- */
+.site-header { transition: box-shadow .25s ease; }
+.site-header.is-stuck { box-shadow: 0 6px 24px rgba(20, 24, 29, .08); }
+
+/* ---------- nav active section ---------- */
+.nav a:not(.btn).is-current { color: var(--cyan-ink); }
+.nav a:not(.btn).is-current::after { right: 0; }
+
+/* ---------- halftone texture on the tinted section ---------- */
+.section-tint { position: relative; overflow: hidden; }
+.section-tint::before {
+  content: "";
+  position: absolute; inset: 0;
+  background-image: radial-gradient(circle, rgba(0, 154, 222, .17) 1px, transparent 1.2px);
+  background-size: 15px 15px;
+  -webkit-mask-image: linear-gradient(180deg, rgba(0,0,0,.6), transparent 45%);
+  mask-image: linear-gradient(180deg, rgba(0,0,0,.6), transparent 45%);
+  pointer-events: none;
+}
+.section-tint > .wrap { position: relative; }
+
+/* ---------- hero: pointer parallax, ink bars react on hover ---------- */
+.hero-art { --px: 0; --py: 0; }
+.hero-card { transition: transform .45s cubic-bezier(.22, .61, .36, 1), box-shadow .3s ease; }
+.hero-card-1 { transform: translate3d(calc(var(--px) * -14px), calc(var(--py) * -10px), 0); }
+.hero-card-2 { transform: translate3d(calc(var(--px) *  20px), calc(var(--py) *  14px), 0); }
+.hero-card-3 { transform: translate3d(calc(var(--px) *  10px), calc(var(--py) * -16px), 0); }
+.cmyk-bars i { transition: height .35s cubic-bezier(.22, .61, .36, 1); }
+.hero-art:hover .cmyk-bars i:nth-child(1) { height: 104px; }
+.hero-art:hover .cmyk-bars i:nth-child(2) { height:  78px; }
+.hero-art:hover .cmyk-bars i:nth-child(3) { height:  96px; }
+.hero-art:hover .cmyk-bars i:nth-child(4) { height:  68px; }
+
+/* ---------- card media zoom + ink rule on hover ---------- */
+.unit, .supply { position: relative; }
+.unit-media, .supply-media { overflow: hidden; }
+.unit-media img, .supply-media img, .gallery img {
+  transition: transform .5s cubic-bezier(.22, .61, .36, 1);
+}
+.unit:hover .unit-media img,
+.supply:hover .supply-media img,
+.gallery figure:hover img { transform: scale(1.06); }
+
+.unit::after, .supply::after {
+  content: "";
+  position: absolute; left: 0; right: 0; bottom: 0; height: 3px;
+  background: linear-gradient(90deg, var(--cyan), var(--magenta), var(--yellow));
+  transform: scaleX(0); transform-origin: left center;
+  transition: transform .4s cubic-bezier(.22, .61, .36, 1);
+}
+.unit:hover::after, .supply:hover::after { transform: scaleX(1); }
+
+.supply { transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease; }
+.supply:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: #cfd8de; }
+
+/* ---------- supply icon in the heading ---------- */
+.supply-body h3 { display: flex; align-items: center; gap: .6rem; }
+.supply-icon {
+  flex: none; width: 26px; height: 26px;
+  fill: none; stroke: var(--cyan); stroke-width: 1.6;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+
+/* ---------- list + tag hovers ---------- */
+.item-list li { transition: color .2s ease; }
+.item-list li:hover { color: var(--cyan-ink); }
+.item-list li::before { transition: background-color .2s ease; }
+.item-list li:hover::before { background: var(--magenta); }
+
+.tags li { transition: background-color .2s ease, color .2s ease, transform .2s ease; }
+.tags li:hover { background: var(--cyan); color: #fff; transform: translateY(-1px); }
+
+/* ---------- gallery filter chips ---------- */
+.filter-bar { display: flex; flex-wrap: wrap; gap: .5rem; margin: -1rem 0 1rem; }
+.chip {
+  display: inline-flex; align-items: center; gap: .4rem;
+  font: inherit; font-size: .88rem; font-weight: 600;
+  color: var(--ink-2); background: #fff;
+  border: 1px solid var(--line); border-radius: 999px;
+  padding: .45rem 1rem; cursor: pointer;
+  transition: background-color .2s ease, border-color .2s ease, color .2s ease, transform .15s ease;
+}
+.chip:hover { border-color: var(--cyan); color: var(--cyan-ink); transform: translateY(-1px); }
+.chip.is-active { background: var(--ink); border-color: var(--ink); color: #fff; }
+.chip-n {
+  font-size: .74rem; font-weight: 700;
+  background: var(--paper-3); color: var(--muted);
+  border-radius: 999px; padding: .05rem .4rem;
+  transition: background-color .2s ease, color .2s ease;
+}
+.chip.is-active .chip-n { background: rgba(255, 255, 255, .22); color: #fff; }
+
+.filter-status { font-size: .85rem; color: var(--muted); margin: 0 0 1.25rem; min-height: 1.3em; }
+
+/* .js .reveal-target sets a .6s transition and outranks a bare `.gallery
+   figure`, which made filtering feel sluggish. Match its specificity so the
+   filter animation keeps its own shorter timing once a tile has revealed. */
+.js .gallery figure,
+.gallery figure { transition: opacity .28s ease, transform .28s ease; }
+.gallery figure.is-hidden { display: none; }
+.gallery figure.is-entering { opacity: 0; transform: scale(.94); }
+
+/* ---------- client logos: mono until hover ---------- */
+.client-grid img {
+  filter: grayscale(1) contrast(.92) opacity(.62);
+  transition: filter .3s ease, transform .3s ease;
+}
+.client-grid li:hover img { filter: none; transform: scale(1.05); }
+
+/* ---------- copy buttons ---------- */
+.ci-value { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; }
+.copy-btn {
+  flex: none; width: 26px; height: 26px;
+  border: 1px solid var(--line); border-radius: 6px;
+  background: #fff; cursor: pointer; position: relative;
+  color: var(--muted);
+  transition: border-color .2s ease, background-color .2s ease, color .2s ease;
+}
+.copy-btn::before {
+  content: "";
+  position: absolute; inset: 0;
+  background: currentColor;
+  -webkit-mask: no-repeat center / 13px 13px url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='9' y='9' width='11' height='11' rx='2'/%3E%3Cpath d='M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1'/%3E%3C/svg%3E");
+  mask: no-repeat center / 13px 13px url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='9' y='9' width='11' height='11' rx='2'/%3E%3Cpath d='M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1'/%3E%3C/svg%3E");
+}
+.copy-btn:hover { border-color: var(--cyan); background: rgba(0, 174, 239, .07); color: var(--cyan-ink); }
+.copy-btn.is-copied { border-color: var(--cyan); background: var(--cyan); color: #fff; }
+.copy-btn.is-copied::before {
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6L9 17l-5-5'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6L9 17l-5-5'/%3E%3C/svg%3E");
+}
+
+/* ---------- back to top ---------- */
+.to-top {
+  position: fixed; right: clamp(1rem, 3vw, 2rem); bottom: clamp(1rem, 3vw, 2rem);
+  z-index: 90;
+  width: 46px; height: 46px;
+  border: none; border-radius: 50%;
+  background: var(--ink); color: #fff; cursor: pointer;
+  display: grid; place-items: center;
+  box-shadow: var(--shadow-md);
+  opacity: 0; transform: translateY(10px) scale(.9);
+  transition: opacity .25s ease, transform .25s ease, background-color .2s ease;
+}
+.to-top[hidden] { display: none; }
+.to-top.is-in { opacity: 1; transform: none; }
+.to-top:hover { background: var(--cyan); }
+.to-top svg {
+  width: 20px; height: 20px;
+  fill: none; stroke: currentColor; stroke-width: 2;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+
+/* ---------- lightbox refinements ---------- */
+.lightbox { opacity: 0; transition: opacity .25s ease; }
+.lightbox.is-open { opacity: 1; }
+.lightbox.is-open .lb-figure img { animation: lb-pop .3s cubic-bezier(.22, .61, .36, 1); }
+@keyframes lb-pop { from { transform: scale(.96); opacity: .4; } to { transform: none; opacity: 1; } }
+.lb-count {
+  color: rgba(255, 255, 255, .6);
+  font-size: .82rem; font-variant-numeric: tabular-nums;
+  margin: .45rem 0 0;
+}
+
+/* ---------- press feedback ---------- */
+.btn:active { transform: translateY(1px) scale(.99); }
+
+/* ---------- live message preview under the quote form ----------
+   Deliberately not a max-height transition. That caps the message at a fixed
+   height (a few lines in the Details box and the preview would be silently
+   clipped by overflow:hidden), and it leaves the box collapsed if the
+   transition is ever interrupted. Toggling display and fading in cannot
+   truncate the text. */
+.msg-preview {
+  display: none;
+  margin-top: 1rem;
+  border: 1px dashed #c9d6de; border-radius: var(--radius-sm);
+  background: var(--paper-2);
+  padding: .85rem 1rem;
+  font-size: .85rem; line-height: 1.5; color: var(--muted);
+  white-space: pre-wrap; word-break: break-word;
+}
+.msg-preview.is-shown { display: block; animation: preview-in .25s ease both; }
+@keyframes preview-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ==========================================================================
+   Reduced motion: keep every state change, drop the movement
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  .js .reveal-target:not(.is-in) { opacity: 1; transform: none; }
+  .js .reveal-target { transition: none; }
+  .hero-card, .cmyk-bars i { transform: none !important; transition: none; }
+  .hero-art:hover .cmyk-bars i { height: 92px; }
+  .unit-media img, .supply-media img, .gallery img,
+  .js .gallery figure, .gallery figure { transition: none; }
+  .msg-preview.is-shown { animation: none; }
+  .unit:hover .unit-media img,
+  .supply:hover .supply-media img,
+  .gallery figure:hover img { transform: none; }
+  .unit::after, .supply::after { transition: none; }
+  .supply:hover, .chip:hover, .tags li:hover,
+  .client-grid li:hover img, .btn:active { transform: none; }
+  .to-top { opacity: 1; transform: none; transition: none; }
+  .lightbox.is-open .lb-figure img { animation: none; }
+}

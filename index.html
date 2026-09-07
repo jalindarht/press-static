@@ -18,6 +18,11 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="stylesheet" href="assets/css/styles.css">
 
+<!-- Marks the document as scripted before first paint. The reveal animations
+     hide their targets only under html.js, so with JavaScript off or broken
+     the page renders complete and static instead of blank. -->
+<script>document.documentElement.classList.add("js");</script>
+
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -51,6 +56,7 @@
 <a class="skip-link" href="#main">Skip to content</a>
 
 <header class="site-header" id="top">
+  <div class="scroll-progress" aria-hidden="true"><i id="scroll-progress-bar"></i></div>
   <div class="wrap header-inner">
     <a class="brand" href="#top" aria-label="Shivansh Printers &mdash; home">
       <img src="assets/img/brand/mark.png" alt="" width="420" height="576" class="brand-mark">
@@ -108,9 +114,9 @@
   <!-- ============ STATS ============ -->
   <section class="stats" aria-label="At a glance">
     <div class="wrap stats-grid">
-      <div class="stat"><strong>10</strong><span>production units in-house</span></div>
-      <div class="stat"><strong>4&#8209;colour</strong><span>offset printing in one pass</span></div>
-      <div class="stat"><strong>15+</strong><span>industrial clients served</span></div>
+      <div class="stat"><strong data-count-to="10">10</strong><span>production units in-house</span></div>
+      <div class="stat"><strong data-count-to="4" data-count-suffix="&#8209;colour">4&#8209;colour</strong><span>offset printing in one pass</span></div>
+      <div class="stat"><strong data-count-to="15" data-count-suffix="+">15+</strong><span>industrial clients served</span></div>
       <div class="stat"><strong>MSME</strong><span>registered enterprise</span></div>
     </div>
   </section>
@@ -370,7 +376,7 @@
             <img src="assets/img/supplies/safety-material.jpg" alt="Range of industrial safety equipment and personal protective equipment" loading="lazy" width="900" height="625">
           </div>
           <div class="supply-body">
-            <h3>Safety Material</h3>
+            <h3><svg class="supply-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 15a9 9 0 0 1 18 0"/><path d="M9 15V7a3 3 0 0 1 6 0v8"/><path d="M2 15h20v2a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2z"/></svg><span>Safety Material</span></h3>
             <p>Personal protective equipment and site safety gear, in the sizes and standards a plant audit expects.</p>
             <ul class="item-list">
               <li>Safety helmets</li>
@@ -394,7 +400,7 @@
             <img src="assets/img/supplies/packaging-material.jpg" alt="Air bubble roll, stretch film, packing strips and BOPP tapes" loading="lazy" width="500" height="500">
           </div>
           <div class="supply-body">
-            <h3>Packaging Material</h3>
+            <h3><svg class="supply-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8l9-4 9 4v8l-9 4-9-4z"/><path d="M3 8l9 4 9-4"/><path d="M12 12v8"/></svg><span>Packaging Material</span></h3>
             <p>Everything the despatch bay gets through in a week, stocked in standard widths and roll lengths.</p>
             <ul class="item-list">
               <li>Air bubble roll</li>
@@ -415,7 +421,7 @@
             <img src="assets/img/supplies/housekeeping-material.jpg" alt="Housekeeping and cleaning consumables" loading="lazy" width="447" height="447">
           </div>
           <div class="supply-body">
-            <h3>Housekeeping Material</h3>
+            <h3><svg class="supply-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3h5v4H8z"/><path d="M6 7h9a2 2 0 0 1 2 2v12H4V9a2 2 0 0 1 2-2z"/><path d="M4 13h13"/><path d="M17 5h4M17 5l3-2"/></svg><span>Housekeeping Material</span></h3>
             <p>Consumables and tools for shop-floor and office housekeeping, on a repeat monthly schedule if you want one.</p>
             <ul class="item-list">
               <li>Floor, glass &amp; toilet cleaners</li>
@@ -437,7 +443,7 @@
             <img src="assets/img/supplies/office-stationery.jpg" alt="Assorted office stationery items" loading="lazy" width="738" height="480">
           </div>
           <div class="supply-body">
-            <h3>Office Stationery</h3>
+            <h3><svg class="supply-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6v3H9z"/><path d="M15 4h3a1 1 0 0 1 1 1v15a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h3"/><path d="M9 11h6M9 15h4"/></svg><span>Office Stationery</span></h3>
             <p>The full desk and store-room list &mdash; convenient to add to a print order you are already placing.</p>
             <ul class="item-list">
               <li>Files, box files &amp; ring binders</li>
@@ -468,29 +474,39 @@
         <h2>The shop floor, and what leaves it</h2>
       </header>
 
+      <div class="filter-bar" role="group" aria-label="Filter gallery">
+        <button type="button" class="chip is-active" data-filter="all" aria-pressed="true">All <span class="chip-n">22</span></button>
+        <button type="button" class="chip" data-filter="presses" aria-pressed="false">Presses <span class="chip-n">5</span></button>
+        <button type="button" class="chip" data-filter="labels" aria-pressed="false">Labels <span class="chip-n">2</span></button>
+        <button type="button" class="chip" data-filter="finishing" aria-pressed="false">Finishing <span class="chip-n">5</span></button>
+        <button type="button" class="chip" data-filter="stamps-id" aria-pressed="false">Stamps &amp; ID <span class="chip-n">6</span></button>
+        <button type="button" class="chip" data-filter="boards" aria-pressed="false">Boards <span class="chip-n">4</span></button>
+      </div>
+      <p class="filter-status" id="filter-status" role="status" aria-live="polite"></p>
+
       <div class="gallery" id="gallery-grid">
-        <figure><img src="assets/img/units/offset-multicolour.jpg" alt="Four colour multicolour offset printing press" loading="lazy" width="542" height="305"><figcaption>Four-colour offset press</figcaption></figure>
-        <figure><img src="assets/img/units/offset-15x20.jpg" alt="15 x 20 offset printing machine" loading="lazy" width="469" height="393"><figcaption>15&times;20 single-colour press</figcaption></figure>
-        <figure><img src="assets/img/units/offset-10x15.jpg" alt="10 x 15 offset printing machine" loading="lazy" width="291" height="392"><figcaption>10&times;15 single-colour press</figcaption></figure>
-        <figure><img src="assets/img/units/digital-press.jpg" alt="Production digital printing press" loading="lazy" width="1007" height="626"><figcaption>Digital production press</figcaption></figure>
-        <figure><img src="assets/img/units/screen-printing.jpg" alt="Screen printing in progress" loading="lazy" width="640" height="480"><figcaption>Screen printing table</figcaption></figure>
-        <figure><img src="assets/img/units/barcode-flexo.jpg" alt="Flexo barcode label printing machine" loading="lazy" width="500" height="500"><figcaption>Flexo label press</figcaption></figure>
-        <figure><img src="assets/img/units/barcode-slitting.jpg" alt="Label slitting and die punching machine" loading="lazy" width="636" height="575"><figcaption>Slitting &amp; die punching</figcaption></figure>
-        <figure><img src="assets/img/units/paper-creasing.jpg" alt="Creasing and folding machine" loading="lazy" width="620" height="678"><figcaption>Creasing &amp; folding</figcaption></figure>
-        <figure><img src="assets/img/units/paper-cutting.jpg" alt="Programmable guillotine paper cutter" loading="lazy" width="685" height="500"><figcaption>Programmable guillotine</figcaption></figure>
-        <figure><img src="assets/img/units/lamination.jpg" alt="Roll lamination machine" loading="lazy" width="740" height="341"><figcaption>Lamination</figcaption></figure>
-        <figure><img src="assets/img/units/spiral-binding.jpg" alt="Spiral binding machine" loading="lazy" width="499" height="423"><figcaption>Spiral binding</figcaption></figure>
-        <figure><img src="assets/img/units/spiral-books.jpg" alt="Finished spiral bound books" loading="lazy" width="512" height="384"><figcaption>Bound registers</figcaption></figure>
-        <figure><img src="assets/img/units/stamp-preink.jpg" alt="Pre-ink stamps" loading="lazy" width="435" height="244"><figcaption>Pre-ink stamps</figcaption></figure>
-        <figure><img src="assets/img/units/stamp-selfink.jpg" alt="Self-inking stamps" loading="lazy" width="329" height="217"><figcaption>Self-ink stamps</figcaption></figure>
-        <figure><img src="assets/img/units/stamp-rubber.jpg" alt="Rubber stamp with handle" loading="lazy" width="296" height="284"><figcaption>Rubber stamps</figcaption></figure>
-        <figure><img src="assets/img/units/icard-cards.jpg" alt="Printed identity cards" loading="lazy" width="1120" height="767"><figcaption>I-cards</figcaption></figure>
-        <figure><img src="assets/img/units/icard-lanyards.jpg" alt="Printed lanyards in many colours" loading="lazy" width="579" height="419"><figcaption>Lanyards</figcaption></figure>
-        <figure><img src="assets/img/units/icard-yoyo.jpg" alt="Yoyo badge reels holding identity cards" loading="lazy" width="450" height="450"><figcaption>Yoyo badge reels</figcaption></figure>
-        <figure><img src="assets/img/units/board-office.jpg" alt="Illuminated office signage board" loading="lazy" width="750" height="563"><figcaption>Signage boards</figcaption></figure>
-        <figure><img src="assets/img/units/board-assembly.jpg" alt="Assembly point safety sign" loading="lazy" width="600" height="600"><figcaption>Safety signage</figcaption></figure>
-        <figure><img src="assets/img/units/board-fire.jpg" alt="Fire extinguisher location sign" loading="lazy" width="760" height="1000"><figcaption>Fire safety signage</figcaption></figure>
-        <figure><img src="assets/img/units/board-whiteboards.jpg" alt="White boards in a range of sizes" loading="lazy" width="458" height="419"><figcaption>White boards</figcaption></figure>
+        <figure data-cat="presses"><img src="assets/img/units/offset-multicolour.jpg" alt="Four colour multicolour offset printing press" loading="lazy" width="542" height="305"><figcaption>Four-colour offset press</figcaption></figure>
+        <figure data-cat="presses"><img src="assets/img/units/offset-15x20.jpg" alt="15 x 20 offset printing machine" loading="lazy" width="469" height="393"><figcaption>15&times;20 single-colour press</figcaption></figure>
+        <figure data-cat="presses"><img src="assets/img/units/offset-10x15.jpg" alt="10 x 15 offset printing machine" loading="lazy" width="291" height="392"><figcaption>10&times;15 single-colour press</figcaption></figure>
+        <figure data-cat="presses"><img src="assets/img/units/digital-press.jpg" alt="Production digital printing press" loading="lazy" width="1007" height="626"><figcaption>Digital production press</figcaption></figure>
+        <figure data-cat="presses"><img src="assets/img/units/screen-printing.jpg" alt="Screen printing in progress" loading="lazy" width="640" height="480"><figcaption>Screen printing table</figcaption></figure>
+        <figure data-cat="labels"><img src="assets/img/units/barcode-flexo.jpg" alt="Flexo barcode label printing machine" loading="lazy" width="500" height="500"><figcaption>Flexo label press</figcaption></figure>
+        <figure data-cat="labels"><img src="assets/img/units/barcode-slitting.jpg" alt="Label slitting and die punching machine" loading="lazy" width="636" height="575"><figcaption>Slitting &amp; die punching</figcaption></figure>
+        <figure data-cat="finishing"><img src="assets/img/units/paper-creasing.jpg" alt="Creasing and folding machine" loading="lazy" width="620" height="678"><figcaption>Creasing &amp; folding</figcaption></figure>
+        <figure data-cat="finishing"><img src="assets/img/units/paper-cutting.jpg" alt="Programmable guillotine paper cutter" loading="lazy" width="685" height="500"><figcaption>Programmable guillotine</figcaption></figure>
+        <figure data-cat="finishing"><img src="assets/img/units/lamination.jpg" alt="Roll lamination machine" loading="lazy" width="740" height="341"><figcaption>Lamination</figcaption></figure>
+        <figure data-cat="finishing"><img src="assets/img/units/spiral-binding.jpg" alt="Spiral binding machine" loading="lazy" width="499" height="423"><figcaption>Spiral binding</figcaption></figure>
+        <figure data-cat="finishing"><img src="assets/img/units/spiral-books.jpg" alt="Finished spiral bound books" loading="lazy" width="512" height="384"><figcaption>Bound registers</figcaption></figure>
+        <figure data-cat="stamps-id"><img src="assets/img/units/stamp-preink.jpg" alt="Pre-ink stamps" loading="lazy" width="435" height="244"><figcaption>Pre-ink stamps</figcaption></figure>
+        <figure data-cat="stamps-id"><img src="assets/img/units/stamp-selfink.jpg" alt="Self-inking stamps" loading="lazy" width="329" height="217"><figcaption>Self-ink stamps</figcaption></figure>
+        <figure data-cat="stamps-id"><img src="assets/img/units/stamp-rubber.jpg" alt="Rubber stamp with handle" loading="lazy" width="296" height="284"><figcaption>Rubber stamps</figcaption></figure>
+        <figure data-cat="stamps-id"><img src="assets/img/units/icard-cards.jpg" alt="Printed identity cards" loading="lazy" width="1120" height="767"><figcaption>I-cards</figcaption></figure>
+        <figure data-cat="stamps-id"><img src="assets/img/units/icard-lanyards.jpg" alt="Printed lanyards in many colours" loading="lazy" width="579" height="419"><figcaption>Lanyards</figcaption></figure>
+        <figure data-cat="stamps-id"><img src="assets/img/units/icard-yoyo.jpg" alt="Yoyo badge reels holding identity cards" loading="lazy" width="450" height="450"><figcaption>Yoyo badge reels</figcaption></figure>
+        <figure data-cat="boards"><img src="assets/img/units/board-office.jpg" alt="Illuminated office signage board" loading="lazy" width="750" height="563"><figcaption>Signage boards</figcaption></figure>
+        <figure data-cat="boards"><img src="assets/img/units/board-assembly.jpg" alt="Assembly point safety sign" loading="lazy" width="600" height="600"><figcaption>Safety signage</figcaption></figure>
+        <figure data-cat="boards"><img src="assets/img/units/board-fire.jpg" alt="Fire extinguisher location sign" loading="lazy" width="760" height="1000"><figcaption>Fire safety signage</figcaption></figure>
+        <figure data-cat="boards"><img src="assets/img/units/board-whiteboards.jpg" alt="White boards in a range of sizes" loading="lazy" width="458" height="419"><figcaption>White boards</figcaption></figure>
       </div>
     </div>
   </section>
@@ -574,7 +590,10 @@
         <ul class="contact-list">
           <li>
             <span class="ci-label">Phone</span>
-            <a href="tel:+917798232464">+91 77982 32464</a>
+            <span class="ci-value">
+              <a href="tel:+917798232464">+91 77982 32464</a>
+              <button type="button" class="copy-btn" data-copy="+917798232464" aria-label="Copy phone number"></button>
+            </span>
           </li>
           <li>
             <span class="ci-label">WhatsApp</span>
@@ -582,7 +601,10 @@
           </li>
           <li>
             <span class="ci-label">Email</span>
-            <a href="mailto:shivanshprinters22@gmail.com">shivanshprinters22@gmail.com</a>
+            <span class="ci-value">
+              <a href="mailto:shivanshprinters22@gmail.com">shivanshprinters22@gmail.com</a>
+              <button type="button" class="copy-btn" data-copy="shivanshprinters22@gmail.com" aria-label="Copy email address"></button>
+            </span>
           </li>
           <li>
             <span class="ci-label">Address</span>
@@ -594,7 +616,10 @@
           </li>
           <li>
             <span class="ci-label">GST</span>
-            <span>27BGKPJ2594P1ZL</span>
+            <span class="ci-value">
+              <span>27BGKPJ2594P1ZL</span>
+              <button type="button" class="copy-btn" data-copy="27BGKPJ2594P1ZL" aria-label="Copy GST number"></button>
+            </span>
           </li>
         </ul>
 
@@ -660,6 +685,8 @@
 
           <p class="form-note" id="qf-error" role="alert" hidden></p>
 
+          <p class="msg-preview" id="msg-preview"></p>
+
           <div class="form-actions">
             <button type="submit" class="btn btn-primary" data-send="whatsapp">Send on WhatsApp</button>
             <button type="button" class="btn btn-ghost" data-send="email">Send by email</button>
@@ -708,6 +735,10 @@
   </div>
 </footer>
 
+<button class="to-top" id="to-top" type="button" aria-label="Back to top" hidden>
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M12 5l-6 6M12 5l6 6"/></svg>
+</button>
+
 <div class="lightbox" id="lightbox" hidden>
   <button class="lb-close" type="button" aria-label="Close">&times;</button>
   <button class="lb-prev" type="button" aria-label="Previous image">&#8249;</button>
@@ -715,6 +746,7 @@
   <figure class="lb-figure">
     <img id="lb-img" src="" alt="">
     <figcaption id="lb-cap"></figcaption>
+    <p class="lb-count" id="lb-count"></p>
   </figure>
 </div>
 

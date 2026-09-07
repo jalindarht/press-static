@@ -15,7 +15,7 @@ Everything in the repository root *is* the published site.
 ```
 index.html                  the whole site (single page, anchored sections)
 assets/css/styles.css       styles
-assets/js/main.js           mobile nav, gallery lightbox, quote-form composer
+assets/js/main.js           interaction layer (see below)
 assets/img/brand/           logo lockup + mark, from the supplied logo artwork
 assets/img/units/           machine and product photography
 assets/img/supplies/        safety / packaging / housekeeping / stationery
@@ -86,6 +86,8 @@ Everything is in `index.html` — there is no CMS and no templating. Common edit
 | Add a gallery photo | drop a JPEG in `assets/img/units/` and add a `<figure>` to `#gallery-grid` |
 | Supply item lists | the `.item-list` blocks in the `#supplies` section |
 | Quote-form categories | the `<optgroup>` blocks in `#qf-job` |
+| Gallery filter groups | `data-cat` on each `<figure>`, and the `.chip` buttons above the grid |
+| Stat counters | `data-count-to` / `data-count-suffix` on the `.stat strong` elements |
 
 ### The quote form
 
@@ -95,6 +97,47 @@ no backend, no third-party form service and no data stored on the server.
 
 If a real inbox-delivered form is wanted later, a hosted endpoint (Formspree, Basin,
 Netlify Forms) can be dropped into `assets/js/main.js` without touching anything else.
+
+## The interaction layer
+
+`assets/js/main.js` is one IIFE of small independent blocks, each guarded so a
+missing element or unsupported API is a no-op rather than an error:
+
+| Block | What it does |
+| --- | --- |
+| `nav` | mobile menu, closes on link click, Escape, and on widening past the breakpoint |
+| `scrollChrome` | progress bar, header shadow, back-to-top — one rAF-throttled scroll listener, not three |
+| `reveal` | staggered fade-and-rise as sections enter view |
+| `counters` | stat numbers count up once, when the strip is half visible |
+| `activeSection` | underlines the nav link for the section you are reading |
+| `parallax` | hero collage drifts with the pointer |
+| `lightbox` | full-screen gallery: arrows, keyboard, swipe, focus trap, neighbour preloading |
+| `filters` | gallery category chips |
+| `copyButtons` | one-click copy for phone, email and GST |
+| `quoteForm` | validation, live preview of the message, WhatsApp / mail handoff |
+
+Three things about it are deliberate and worth not undoing:
+
+**Nothing can be hidden by a broken animation.** The reveal animation's hidden
+state lives in the stylesheet behind `html.js`, which an inline script in
+`<head>` sets before first paint. With JavaScript off, disabled, or failing, no
+element is ever hidden — and because the rule is in the blocking stylesheet
+rather than applied by the deferred script, there is also no flash of
+visible-then-hidden content. On top of that, `reveal` bails out and shows
+everything if `IntersectionObserver` is missing, if the viewport has no size
+(a background tab, a hidden iframe), or if nothing has revealed after 1.5s.
+
+**`prefers-reduced-motion` is honoured properly.** The block at the end of
+`styles.css` removes the movement but keeps every state change, so hovers,
+filters and the lightbox still respond — they just do not travel. The parallax
+and the counters opt out in JavaScript instead, since there is no static
+equivalent of either.
+
+**The lightbox walks the filtered set, not the whole grid.** `filters` hands
+the visible figures to `lightbox.setPool()`, so arrowing through a filtered
+gallery stays inside the filter and the `3 / 6` counter is honest. The grid
+uses one delegated click handler for the same reason — filtering never leaves
+stale listeners behind.
 
 ## Notes on the assets
 
