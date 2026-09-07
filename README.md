@@ -80,6 +80,7 @@ Everything is in `index.html` — there is no CMS and no templating. Common edit
 | Phone / WhatsApp number | `index.html` (search `7798232464`) **and** `PHONE` in `assets/js/main.js` |
 | Email address | `index.html` (search `shivanshprinters22`) **and** `EMAIL` in `assets/js/main.js` |
 | Address, GST | `index.html` — contact section and the JSON-LD block in `<head>` |
+| Map link | `index.html` — the "Open in Google Maps" href **and** `hasMap` in the JSON-LD |
 | Brand colours | CSS custom properties at the top of `assets/css/styles.css` |
 | Products list | the `.cat-grid` block in `index.html` |
 | Add a client logo | drop a trimmed PNG in `assets/img/clients/` and add an `<li>` to `.client-grid` |
@@ -139,6 +140,28 @@ gallery stays inside the filter and the `3 / 6` counter is honest. The grid
 uses one delegated click handler for the same reason — filtering never leaves
 stale listeners behind.
 
+## The map link
+
+Both the "Open in Google Maps" button and `hasMap` in the JSON-LD point at the business's
+own Google Maps listing (`maps.app.goo.gl/qeUPvVD2a8BPNchv5`), not a text search for the
+address. It resolves to *Shivansh Printers, Koregaon Bhima, Maharashtra 412216*, plus code
+`J3V9+MHR`.
+
+Two things to know if it ever stops working:
+
+- It is a Maps app short link. If Google retires the shortener, the durable equivalent for
+  the same listing is `https://maps.google.com/?cid=15950684371975808119` (the decimal form
+  of the listing's CID, `0xdd5c36ed0bfe2477`).
+- The JSON-LD has **no** `geo` block. The listing page is client-rendered and exposes no
+  coordinates to fetch, and the plus code cannot be decoded to a latitude and longitude
+  without a reference point that would have to be guessed. A wrong `geo` would be worse than
+  none, since search engines would trust it over the address. If you want it, read the
+  coordinates off the Maps listing (right-click the pin, "What's here?") and add:
+
+  ```json
+  "geo": { "@type": "GeoCoordinates", "latitude": 00.000000, "longitude": 00.000000 },
+  ```
+
 ## Notes on the assets
 
 - `brand/logo.png` and `brand/mark.png` come from the supplied logo JPEG. The white
@@ -181,8 +204,8 @@ fills its frame with `object-fit: cover`, unlike `.unit-media` which contains it
   supplied file. It is sharp enough for the card and gallery tiles but would soften if used
   much larger.
 - Client logos are reproduced from the profile's customer page. All marks belong to their
-  respective owners. They render desaturated and return to full colour on hover, which stops
-  fifteen competing brand palettes fighting the rest of the page.
+  respective owners. They render in **full colour** — an earlier revision desaturated them
+  until hover and that was rejected, so do not reintroduce a `filter` on `.client-grid img`.
 - The card heading icons (`.unit-icon`, `.supply-icon`) are inline SVG authored in this
   repository — no third-party artwork, a few hundred bytes each, and they take the brand
   cyan from CSS rather than being baked in.
