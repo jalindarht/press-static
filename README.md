@@ -15,7 +15,7 @@ Everything in the repository root *is* the published site.
 ```
 index.html                  the whole site (single page, anchored sections)
 assets/css/styles.css       styles
-assets/js/main.js           mobile nav, gallery lightbox, quote-form composer
+assets/js/main.js           interaction layer (see below)
 assets/img/brand/           logo lockup + mark, from the supplied logo artwork
 assets/img/units/           machine and product photography
 assets/img/supplies/        safety / packaging / housekeeping / stationery
@@ -86,6 +86,8 @@ Everything is in `index.html` — there is no CMS and no templating. Common edit
 | Add a gallery photo | drop a JPEG in `assets/img/units/` and add a `<figure>` to `#gallery-grid` |
 | Supply item lists | the `.item-list` blocks in the `#supplies` section |
 | Quote-form categories | the `<optgroup>` blocks in `#qf-job` |
+| Gallery filter groups | `data-cat` on each `<figure>`, and the `.chip` buttons above the grid |
+| Stat counters | `data-count-to` / `data-count-suffix` on the `.stat strong` elements |
 
 ### The quote form
 
@@ -96,6 +98,47 @@ no backend, no third-party form service and no data stored on the server.
 If a real inbox-delivered form is wanted later, a hosted endpoint (Formspree, Basin,
 Netlify Forms) can be dropped into `assets/js/main.js` without touching anything else.
 
+## The interaction layer
+
+`assets/js/main.js` is one IIFE of small independent blocks, each guarded so a
+missing element or unsupported API is a no-op rather than an error:
+
+| Block | What it does |
+| --- | --- |
+| `nav` | mobile menu, closes on link click, Escape, and on widening past the breakpoint |
+| `scrollChrome` | progress bar, header shadow, back-to-top — one rAF-throttled scroll listener, not three |
+| `reveal` | staggered fade-and-rise as sections enter view |
+| `counters` | stat numbers count up once, when the strip is half visible |
+| `activeSection` | underlines the nav link for the section you are reading |
+| `parallax` | hero collage drifts with the pointer |
+| `lightbox` | full-screen gallery: arrows, keyboard, swipe, focus trap, neighbour preloading |
+| `filters` | gallery category chips |
+| `copyButtons` | one-click copy for phone, email and GST |
+| `quoteForm` | validation, live preview of the message, WhatsApp / mail handoff |
+
+Three things about it are deliberate and worth not undoing:
+
+**Nothing can be hidden by a broken animation.** The reveal animation's hidden
+state lives in the stylesheet behind `html.js`, which an inline script in
+`<head>` sets before first paint. With JavaScript off, disabled, or failing, no
+element is ever hidden — and because the rule is in the blocking stylesheet
+rather than applied by the deferred script, there is also no flash of
+visible-then-hidden content. On top of that, `reveal` bails out and shows
+everything if `IntersectionObserver` is missing, if the viewport has no size
+(a background tab, a hidden iframe), or if nothing has revealed after 1.5s.
+
+**`prefers-reduced-motion` is honoured properly.** The block at the end of
+`styles.css` removes the movement but keeps every state change, so hovers,
+filters and the lightbox still respond — they just do not travel. The parallax
+and the counters opt out in JavaScript instead, since there is no static
+equivalent of either.
+
+**The lightbox walks the filtered set, not the whole grid.** `filters` hands
+the visible figures to `lightbox.setPool()`, so arrowing through a filtered
+gallery stays inside the filter and the `3 / 6` counter is honest. The grid
+uses one delegated click handler for the same reason — filtering never leaves
+stale listeners behind.
+
 ## Notes on the assets
 
 - `brand/logo.png` and `brand/mark.png` come from the supplied logo JPEG. The white
@@ -103,17 +146,46 @@ Netlify Forms) can be dropped into `assets/js/main.js` without touching anything
   the printer body survive; the alpha edge was then feathered to hide the JPEG stair-step.
   If a vector original (AI/EPS/SVG/PDF) ever turns up, replace these — it will be sharper
   and much smaller.
-- Machine and product photographs are the images embedded in the profile PDF, trimmed and
-  re-encoded. Several are stock or supplier product shots used in the original brochure
-  rather than photographs of this workshop — the self-ink stamp shot is visibly
-  Trodat-branded and the pre-ink one carries an `expressprint.com.sg` watermark. The four
-  supply collages are generic web images of the same kind. All of these are worth replacing
-  with real photographs of actual stock when they are available.
+- Machine photographs are the images embedded in the profile PDF, trimmed and re-encoded.
+  Some remain supplier product shots used in the original brochure rather than photographs
+  of this workshop — the self-ink stamp shot is still visibly Trodat-branded, for instance.
+  Worth replacing with real photographs when they are available.
+- The pre-ink stamp photo arrived carrying an `expressprint.com.sg` watermark along the
+  bottom. Publishing another company's watermark on a commercial site is not acceptable, so
+  the strip is cropped off (the photo is otherwise the right product).
+
+### Stock photography
+
+Three of the four supply photographs are from **Pexels**, whose licence permits commercial
+use with no attribution required. Sources, so they can be re-fetched or replaced:
+
+| File | Pexels photo |
+| --- | --- |
+| `supplies/safety-material.jpg` | [8488037](https://www.pexels.com/photo/8488037/) — hard hat and work gloves |
+| `supplies/housekeeping-material.jpg` | [5217889](https://www.pexels.com/photo/5217889/) — row of cleaning products |
+| `supplies/office-stationery.jpg` | [8251060](https://www.pexels.com/photo/8251060/) — desk stationery |
+
+Each is centre-cropped to 16:9 and re-encoded at 1200px wide.
+
+**`supplies/packaging-material.jpg` is deliberately not stock.** Pexels has no usable
+photograph of industrial packaging consumables — searches for packing tape, bubble wrap and
+stretch film return domestic house-moving shots and warehouses full of cardboard boxes,
+and cardboard boxes are not on the product list at all. The supplied collage names the
+actual four product families (air bubble roll, stretch roll, packing strip, BOPP tape), so
+it is more accurate than any substitute. It is composited onto a 16:9 plate so it matches
+the other three cards' proportions.
+
+Because these are photographs rather than white-background product shots, `.supply-media`
+fills its frame with `object-fit: cover`, unlike `.unit-media` which contains its image.
 - The four-colour press photo is 542px wide after trimming, which is the limit of the
   supplied file. It is sharp enough for the card and gallery tiles but would soften if used
   much larger.
 - Client logos are reproduced from the profile's customer page. All marks belong to their
-  respective owners.
+  respective owners. They render desaturated and return to full colour on hover, which stops
+  fifteen competing brand palettes fighting the rest of the page.
+- The card heading icons (`.unit-icon`, `.supply-icon`) are inline SVG authored in this
+  repository — no third-party artwork, a few hundred bytes each, and they take the brand
+  cyan from CSS rather than being baked in.
 
 ## Card image sizing
 
