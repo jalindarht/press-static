@@ -1,9 +1,11 @@
 # Shivansh Printers — website
 
-Static marketing site for **Shivansh Printers**, Koregaon Bhima, Pune — offset, digital,
-screen and flexo printing, barcode labels, stamps, I-cards, binding and industrial signage.
+Static marketing site for **Shivansh Printers**, Koregaon Bhima, Pune — multicolour offset,
+digital, screen and flexo printing, barcode labels, stamps, I-cards, binding and industrial
+signage, plus supply of safety, packaging, housekeeping and office stationery material.
 
-Content, photography and client logos are taken from the company profile PDF.
+Content, machine photography and client logos are taken from the company profile PDF; the
+four-colour press, the four supply categories and the current logo were supplied separately.
 
 ## Stack
 
@@ -14,8 +16,9 @@ Everything in the repository root *is* the published site.
 index.html                  the whole site (single page, anchored sections)
 assets/css/styles.css       styles
 assets/js/main.js           mobile nav, gallery lightbox, quote-form composer
-assets/img/brand/           logo lockup + mark, extracted from the profile PDF
+assets/img/brand/           logo lockup + mark, from the supplied logo artwork
 assets/img/units/           machine and product photography
+assets/img/supplies/        safety / packaging / housekeeping / stationery
 assets/img/clients/         customer logos
 favicon.*, apple-touch-icon.png
 .nojekyll                   tells Pages to serve files as-is
@@ -81,6 +84,8 @@ Everything is in `index.html` — there is no CMS and no templating. Common edit
 | Products list | the `.cat-grid` block in `index.html` |
 | Add a client logo | drop a trimmed PNG in `assets/img/clients/` and add an `<li>` to `.client-grid` |
 | Add a gallery photo | drop a JPEG in `assets/img/units/` and add a `<figure>` to `#gallery-grid` |
+| Supply item lists | the `.item-list` blocks in the `#supplies` section |
+| Quote-form categories | the `<optgroup>` blocks in `#qf-job` |
 
 ### The quote form
 
@@ -93,11 +98,28 @@ Netlify Forms) can be dropped into `assets/js/main.js` without touching anything
 
 ## Notes on the assets
 
-- The logo, mark and favicons were rendered from the vector artwork in the profile PDF, so
-  they are crisp at any size.
-- Machine and product photographs are the images embedded in that PDF, trimmed and
-  re-encoded. A few of them are stock/supplier product shots that were used in the original
-  brochure rather than photographs of this workshop — worth replacing with real shop-floor
-  photos when they are available.
+- `brand/logo.png` and `brand/mark.png` come from the supplied logo JPEG. The white
+  background was removed by flood-filling inward from the border, so the white gaps *inside*
+  the printer body survive; the alpha edge was then feathered to hide the JPEG stair-step.
+  If a vector original (AI/EPS/SVG/PDF) ever turns up, replace these — it will be sharper
+  and much smaller.
+- Machine and product photographs are the images embedded in the profile PDF, trimmed and
+  re-encoded. Several are stock or supplier product shots used in the original brochure
+  rather than photographs of this workshop — the self-ink stamp shot is visibly
+  Trodat-branded and the pre-ink one carries an `expressprint.com.sg` watermark. The four
+  supply collages are generic web images of the same kind. All of these are worth replacing
+  with real photographs of actual stock when they are available.
+- The four-colour press photo is 542px wide after trimming, which is the limit of the
+  supplied file. It is sharp enough for the card and gallery tiles but would soften if used
+  much larger.
 - Client logos are reproduced from the profile's customer page. All marks belong to their
   respective owners.
+
+## Card image sizing
+
+`.unit-media` and `.supply-media` use a fixed `height` plus a `max-height: calc(...)` on the
+image, deliberately — **not** `aspect-ratio` with `max-height: 100%`. A percentage
+max-height on a grid item resolves against the auto-sized row track rather than the box, so
+it gets ignored: tall or square photos then stretch the box, which knocks the card titles in
+a row out of alignment and clips the image. If you change these heights, change the padding
+variable alongside them.
